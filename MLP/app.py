@@ -247,7 +247,7 @@ app = Flask(__name__)
 @app.route('/load', methods=['GET', 'POST'])
 def load():
     model = MLP()
-    model.load_state_dict(torch.load("MLP/model.pt"))
+    model.load_state_dict(torch.load("model.pt"))
     model.eval()
     
     return {}
@@ -256,7 +256,7 @@ def load():
 
 
 @app.route('/data',methods = ['POST', 'GET'])
-def script(text):
+def app(text):
     # Create a prompt
     prompt = f"""
         It is currently the year 2023. Pull information from the prompts.
@@ -318,6 +318,16 @@ def script(text):
 
 
 if __name__ == "__main__":
-    out = script("I am a male with 200,000 dollars. Who got divoriced, but is educated with a BA. I have no kids, and I drive a 2010 Honda Civic.")
+    from flask import Flask, request,jsonify
+    from flask_socketio import SocketIO,emit
+    from flask_cors import CORS
+    load()
+    app = Flask(__name__)
+    app.config['SECRET_KEY'] = 'secret!'
+    CORS(app,resources={r"/*":{"origins":"*"}})
+    socketio = SocketIO(app,cors_allowed_origins="*")
+    socketio.run(app, debug=True,port=5001)
     
-    print(out["data"])
+    # out = script("I am a male with 200,000 dollars. Who got divoriced, but is educated with a BA. I have no kids, and I drive a 2010 Honda Civic.")
+    
+    # print(out["data"])
