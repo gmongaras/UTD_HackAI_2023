@@ -270,10 +270,10 @@ def load():
 
 
 
-@app.route('/data',methods = ['POST', 'GET'])
-def main():
+@app.route('/data/<text>/')#,methods = ['POST', 'GET'])
+def main(text):
     # Get the text
-    text = request.args.get("text")
+    # text = request.args.get("text")
     # text="I am a male with 200,000 dollars. Who got divoriced, but is educated with a BA. I have no kids, and I drive a 2010 Honda Civic."
     
     # Create a prompt
