@@ -252,7 +252,9 @@ global model
 model = None
 
 # create the Flask app
+from flask_cors import CORS
 app = Flask(__name__)
+CORS(app)
 
 
 
@@ -298,15 +300,33 @@ def main(text="I am a male with 200,000 dollars. Who got divoriced, but is educa
     )["choices"][0]["message"]["content"].split("\n")
     
     # Extract the information from the text
-    Age = messages[0]
-    Income = messages[1].split(" ")[-1]
-    Gender = messages[2].split(" ")[-1]
-    Married = messages[3].split(" ")[-1]
-    Education = messages[4].split(" ")[-1]
-    Past_Accidents = messages[5].split(" ")[-1]
-    Has_Children = messages[6].split(" ")[-1]
-    Has_Sports_Car = messages[7].split(" ")[-1]
-    Vehicle_Year = messages[8].split(" ")[-1]
+    Age = messages[0].strip()
+    if Age not in ["16-25", "26-39", "40-64", "65+", "NA"]:
+        Age = "NA"
+    Income = messages[1].split(" ")[-1].strip()
+    if Income not in ["poverty", "working class", "middle class", "upper class", "NA"]:
+        Income = "NA"
+    Gender = messages[2].split(" ")[-1].strip()
+    if Gender not in ["female", "male", "NA"]:
+        Gender = "NA"
+    Married = messages[3].split(" ")[-1].strip()
+    if Married not in ["False", "True", "NA"]:
+        Married = "NA"
+    Education = messages[4].split(" ")[-1].strip()
+    if Education not in ["NA", "HS", "B", "BA", "BS", "M", "MA", "MS", "PHD"]:
+        Education = "NA"
+    Past_Accidents = messages[5].split(" ")[-1].strip()
+    if Past_Accidents.isdigit() == False:
+        Past_Accidents = "NA"
+    Has_Children = messages[6].split(" ")[-1].strip()
+    if Has_Children not in ["No", "Yes", "NA"]:
+        Has_Children = "NA"
+    Has_Sports_Car = messages[7].split(" ")[-1].strip()
+    if Has_Sports_Car not in ["No", "Yes", "NA"]:
+        Has_Sports_Car = "NA"
+    Vehicle_Year = messages[8].split(" ")[-1].strip()
+    if Vehicle_Year.isnumeric() == False:
+        Vehicle_Year = "NA"
     
     # Convert to integers
     Age = int(Age) if Age != "NA" else -1
