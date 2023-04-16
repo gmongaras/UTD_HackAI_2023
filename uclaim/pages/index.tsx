@@ -6,8 +6,33 @@ import Footer from "../components/Footer";
 import Header from "../components/Header";
 import SquigglyLines from "../components/SquigglyLines";
 import { Textarea, Button } from '@chakra-ui/react'
+import React, { useState, useEffect } from "react";
 
 const Home: NextPage = () => {
+
+  const [prompt, setPrompt] = useState('');
+  const [data, setData] = useState('');
+  const util = require('util');
+  const { exec } = require('child_process');
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:5001/data").then((res) =>
+      res.json().then((data) => {
+        setData(data)
+      })
+    );
+  }, []);
+
+  const handleSubmit = event => {
+    event.preventDefault();
+    fetch("http://127.0.0.1:5001/data").then((res) =>
+      res.json().then((data) => {
+        setData(data)
+      })
+    );
+    console.log(data)
+  };
+
   return (
     <div className="flex max-w-6xl mx-auto flex-col items-center justify-center py-2 min-h-screen">
       <Head>
@@ -24,7 +49,7 @@ const Home: NextPage = () => {
         <h2 className="mx-auto mt-12 max-w-xl text-lg sm:text-gray-400 text-gray-500 leading-7">
           Just Provide a Brief Description of Yourself and We'll Determine if You Are Eligible for Insurance Coverage!
         </h2>
-        <div>
+        <form onSubmit={handleSubmit}>
           <div className="border-t mt-1">
             <Textarea
               placeholder = 'Tell us about yourself!'
@@ -34,6 +59,8 @@ const Home: NextPage = () => {
               resize='none'
               h = {200}
               w = {500}
+              type='prompt'
+              onChange={event => setPrompt(event.currentTarget.value)}
             />
           </div>
           <div className = "py-4 text-right">
@@ -47,11 +74,12 @@ const Home: NextPage = () => {
               width='200px'
               border='2px'
               borderColor='white'
+              type='submit'
             >
               Button
             </Button>
           </div>
-        </div>
+        </form>
       </main>
       <Footer />
     </div>
