@@ -272,7 +272,6 @@ def load():
 
 @app.route('/data',methods = ['POST', 'GET'])
 def main(text="I am a male with 200,000 dollars. Who got divoriced, but is educated with a BA. I have no kids, and I drive a 2010 Honda Civic."):
-    return {"data": 0.12345}
     # Create a prompt
     prompt = f"""
         It is currently the year 2023. Pull information from the prompts.
@@ -346,7 +345,7 @@ def main(text="I am a male with 200,000 dollars. Who got divoriced, but is educa
     # Predict the outcome
     out = model(vec)
     
-    return {"data": out.cpu().detach().item()}
+    return {"data": round(out.cpu().detach().item()*100, 2)}
 
 
 
