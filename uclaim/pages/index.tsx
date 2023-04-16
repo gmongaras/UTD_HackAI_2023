@@ -15,13 +15,13 @@ const Home: NextPage = () => {
   const util = require('util');
   const { exec } = require('child_process');
 
-  useEffect(() => {
-    fetch("http://127.0.0.1:5001/data").then((res) =>
-      res.json().then((data) => {
-        setData(data)
-      })
-    );
-  }, []);
+  // useEffect(() => {
+  //   fetch("http://127.0.0.1:5001/data").then((res) =>
+  //     res.json().then((data) => {
+  //       setData(data)
+  //     })
+  //   );
+  // }, []);
 
   const handleSubmit = event => {
     event.preventDefault();
@@ -80,6 +80,16 @@ const Home: NextPage = () => {
             </Button>
           </div>
         </form>
+        {data &&
+          <h2 className="mx-auto max-w-4xl font-display text-3xl font-bold tracking-normal text-gray-300 sm:text-4xl p-6">
+            You are{" "}
+              <span className="relative whitespace-nowrap text-blue-500">
+                <SquigglyLines />
+                <span className="relative">{data.data * 100}</span>
+              </span>{" "}
+            {" "}percent likely to be claimed!
+          </h2>
+        }
       </main>
       <Footer />
     </div>
