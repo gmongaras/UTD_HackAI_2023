@@ -25,7 +25,9 @@ const Home: NextPage = () => {
 
   const handleSubmit = event => {
     event.preventDefault();
-    fetch("http://127.0.0.1:5001/data").then((res) =>
+    console.log("http://127.0.0.1:5001/data/" + prompt + "/")
+    fetch("http://127.0.0.1:5001/data/" + prompt + "/")
+    .then((res) =>
       res.json().then((data) => {
         setData(data)
       })
@@ -85,7 +87,7 @@ const Home: NextPage = () => {
             You are{" "}
               <span className="relative whitespace-nowrap text-blue-500">
                 <SquigglyLines />
-                <span className="relative">{data.data * 100}</span>
+                <span className="relative">{data.data}</span>
               </span>{" "}
             {" "}percent likely to be claimed!
           </h2>
