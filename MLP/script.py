@@ -1,6 +1,7 @@
 import torch
 import openai
 from MLP import MLP
+from flask import Flask, request
 openai.api_key = "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"
 
 
@@ -236,18 +237,25 @@ Vehicle Year (20xx/NA): 2013"""
 
 
 
+model = None
 
-
-model = MLP()
-model.load_state_dict(torch.load("MLP/model.pt"))
-model.eval()
-
-
+# create the Flask app
+app = Flask(__name__)
 
 
 
+@app.route('/load', methods=['GET', 'POST'])
+def load():
+    model = MLP()
+    model.load_state_dict(torch.load("MLP/model.pt"))
+    model.eval()
+    
+    return {}
 
 
+
+
+@app.route('/data',methods = ['POST', 'GET'])
 def script(text):
     # Create a prompt
     prompt = f"""
@@ -298,7 +306,7 @@ def script(text):
     # Predict the outcome
     out = model(vec)
     
-    return out.cpu().detach().item()
+    return {"data": out.cpu().detach().item()}
 
 
 
@@ -312,4 +320,4 @@ def script(text):
 if __name__ == "__main__":
     out = script("I am a male with 200,000 dollars. Who got divoriced, but is educated with a BA. I have no kids, and I drive a 2010 Honda Civic.")
     
-    print(out)
+    print(out["data"])
