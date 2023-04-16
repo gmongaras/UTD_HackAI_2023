@@ -271,7 +271,11 @@ def load():
 
 
 @app.route('/data',methods = ['POST', 'GET'])
-def main(text="I am a male with 200,000 dollars. Who got divoriced, but is educated with a BA. I have no kids, and I drive a 2010 Honda Civic."):
+def main():
+    # Get the text
+    text = request.args.get("text")
+    # text="I am a male with 200,000 dollars. Who got divoriced, but is educated with a BA. I have no kids, and I drive a 2010 Honda Civic."
+    
     # Create a prompt
     prompt = f"""
         It is currently the year 2023. Pull information from the prompts.
