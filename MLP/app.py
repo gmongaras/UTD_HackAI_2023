@@ -9,11 +9,6 @@ openai.api_key = "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"
 
 
 
-
-
-
-
-
 # One hot mapping
 def one_hot(map_, num_cls, v):
     if type(v) != list:
@@ -72,7 +67,7 @@ def vars_to_vec(Age, Income, Gender, Married, Education, Past_Accidents, Has_Chi
     Married = Married_oh[:, :-1]
     
     # Education
-    map_ = {"NA":0, "HS":1, "B":2, "M":3, "PHD":4}
+    map_ = {"NA":0, "HS":1, "B":2, "BA":2, "BS":2, "M":3, "MA":3, "MS":3, "PHD":4}
     Education = one_hot(map_, 4, Education)
     
     # Past_Accidents
@@ -237,6 +232,23 @@ Vehicle Year (20xx/NA): 2013"""
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+global model
 model = None
 
 # create the Flask app
@@ -246,6 +258,7 @@ app = Flask(__name__)
 
 @app.route('/load', methods=['GET', 'POST'])
 def load():
+    global model
     model = MLP()
     model.load_state_dict(torch.load("model.pt"))
     model.eval()
@@ -256,7 +269,7 @@ def load():
 
 
 @app.route('/data',methods = ['POST', 'GET'])
-def app(text):
+def main(text="I am a male with 200,000 dollars. Who got divoriced, but is educated with a BA. I have no kids, and I drive a 2010 Honda Civic."):
     # Create a prompt
     prompt = f"""
         It is currently the year 2023. Pull information from the prompts.
@@ -285,25 +298,32 @@ def app(text):
     
     # Extract the information from the text
     Age = messages[0]
-    Income = messages[1].split(" ")[1]
-    Gender = messages[2].split(" ")[1]
-    Married = messages[3].split(" ")[1]
-    Education = messages[4].split(" ")[1]
-    Past_Accidents = messages[5].split(" ")[1]
-    Has_Children = messages[6].split(" ")[1]
-    Has_Sports_Car = messages[7].split(" ")[1]
-    Vehicle_Year = messages[8].split(" ")[1]
+    Income = messages[1].split(" ")[-1]
+    Gender = messages[2].split(" ")[-1]
+    Married = messages[3].split(" ")[-1]
+    Education = messages[4].split(" ")[-1]
+    Past_Accidents = messages[5].split(" ")[-1]
+    Has_Children = messages[6].split(" ")[-1]
+    Has_Sports_Car = messages[7].split(" ")[-1]
+    Vehicle_Year = messages[8].split(" ")[-1]
     
     # Convert to integers
     Age = int(Age) if Age != "NA" else -1
     Income = int(Income) if Income != "NA" else -1
-    Past_Accidents = int(Past_Accidents) if Past_Accidents != "NA" else 0
-    Vehicle_Year = int(Vehicle_Year) if Vehicle_Year != "NA" else -1
+    try:
+        Past_Accidents = int(Past_Accidents) if type(Past_Accidents) != "NA" else 0
+    except:
+        Past_Accidents = 0
+    try:
+        Vehicle_Year = int(Vehicle_Year) if Vehicle_Year != "NA" else -1
+    except:
+        Vehicle_Year = -1
     
     # Create the vector from the variables
     vec = vars_to_vec(Age, Income, Gender, Married, Education, Past_Accidents, Has_Children, Has_Sports_Car, Vehicle_Year)
     
     # Predict the outcome
+    print(vec)
     out = model(vec)
     
     return {"data": out.cpu().detach().item()}
@@ -318,15 +338,8 @@ def app(text):
 
 
 if __name__ == "__main__":
-    from flask import Flask, request,jsonify
-    from flask_socketio import SocketIO,emit
-    from flask_cors import CORS
     load()
-    app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'secret!'
-    CORS(app,resources={r"/*":{"origins":"*"}})
-    socketio = SocketIO(app,cors_allowed_origins="*")
-    socketio.run(app, debug=True,port=5001)
+    app.run(debug=True, port=5001)
     
     # out = script("I am a male with 200,000 dollars. Who got divoriced, but is educated with a BA. I have no kids, and I drive a 2010 Honda Civic.")
     
